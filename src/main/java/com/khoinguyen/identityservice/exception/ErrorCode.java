@@ -11,11 +11,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"),
     INVALID_KEY(1001, "Invalid message key"),
     USERNAME_INVALID(1002, "Username must be at least 3 characters"),
     USER_EXISTED(1003, "User existed"),
     PASSWORD_INVALID(1004, "Password must be at least 8 characters"),
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception");
+    USER_NOT_EXIST(1005, "User not exist");
 
     int code;
     String message;
