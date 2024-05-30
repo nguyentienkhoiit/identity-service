@@ -1,9 +1,12 @@
 package com.khoinguyen.identityservice.controller;
 
 import com.khoinguyen.identityservice.dto.request.AuthenticationRequest;
+import com.khoinguyen.identityservice.dto.request.IntrospectRequest;
 import com.khoinguyen.identityservice.dto.response.ApiResponse;
 import com.khoinguyen.identityservice.dto.response.AuthenticationResponse;
+import com.khoinguyen.identityservice.dto.response.IntrospectResponse;
 import com.khoinguyen.identityservice.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -19,9 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     AuthenticationService authenticationService;
 
-    @PostMapping
+    @PostMapping("/introspect")
+    public ApiResponse<IntrospectResponse> authenticate(
+            @RequestBody IntrospectRequest request
+    ) throws JOSEException, ParseException {
+        return new ApiResponse<>(authenticationService.introspect(request));
+    }
+
+    @PostMapping("/token")
     public ApiResponse<AuthenticationResponse> authenticate(
-            @RequestBody final AuthenticationRequest request
+            @RequestBody AuthenticationRequest request
     ) {
         return new ApiResponse<>(authenticationService.authenticate(request));
     }

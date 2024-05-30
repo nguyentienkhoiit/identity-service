@@ -2,7 +2,8 @@ server:
   port: 8080
   servlet:
     context-path: /identity
-
+jwt:
+  signerKey: UlCFXMjIMtTYduhI2UP7xrnln3dRSHzXutc50cHjiwM+oTsVad/Ow5Po51yDcbBS
 spring:
   application:
     name: identity-service
