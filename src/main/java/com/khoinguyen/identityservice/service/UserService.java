@@ -11,6 +11,8 @@ import com.khoinguyen.identityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,10 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         User user = userMapper.toUser(request);
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -39,19 +45,19 @@ public class UserService {
     public UserResponse getUser(String userId) {
         return userRepository.findById(userId)
                 .map(userMapper::toUserResponse)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(user);
     }
 
     public UserResponse deleteUser(String userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         userRepository.deleteById(user.getId());
         return userMapper.toUserResponse(user);
     }
