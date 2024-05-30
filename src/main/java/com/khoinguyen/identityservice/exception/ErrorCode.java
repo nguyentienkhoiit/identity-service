@@ -18,8 +18,7 @@ public enum ErrorCode {
     PASSWORD_INVALID(1004, "Password must be at least 4 characters"),
     USER_NOT_EXIST(1005, "User not exist"),
     UNAUTHENTICATED(1006, "Unauthenticated"),
-    TOKEN_VERIFICATION_FAILED(1007, "Token verification failed");
-    ;
+    TOKEN_VERIFICATION_FAILED(1007, "Token verification failed");;
 
     int code;
     String message;

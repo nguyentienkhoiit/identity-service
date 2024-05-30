@@ -4,5 +4,6 @@
       "name": "jwt.signerKey",
       "type": "java.lang.String",
       "description": "Description for jwt.signerKey."
-  }
-] }
+    }
+  ]
+}

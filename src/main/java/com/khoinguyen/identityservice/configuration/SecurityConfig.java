@@ -24,13 +24,12 @@ import static org.springframework.http.HttpMethod.POST;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
-
     private final String[] PUBLIC_ENDPOINTS = {
             "/auth/token",
             "/auth/introspect"
     };
+    @Value("${jwt.signerKey}")
+    protected String SIGNER_KEY;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

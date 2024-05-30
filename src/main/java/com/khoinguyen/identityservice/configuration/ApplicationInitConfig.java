@@ -1,7 +1,6 @@
 package com.khoinguyen.identityservice.configuration;
 
 import com.khoinguyen.identityservice.entity.User;
-import com.khoinguyen.identityservice.enums.Role;
 import com.khoinguyen.identityservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -21,7 +20,7 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if(userRepository.findByUsername("admin").isEmpty()) {
+            if (userRepository.findByUsername("admin").isEmpty()) {
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
