@@ -1,6 +1,8 @@
 package com.khoinguyen.identityservice.exception;
 
 import com.khoinguyen.identityservice.dto.response.ApiResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -8,11 +10,16 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String MIN_ATTRIBUTE = "min";
+    private static final String MAX_ATTRIBUTE = "max";
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<?>> handleRuntimeException(RuntimeException exception) {
@@ -53,19 +60,46 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         String enumKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
+
+        Map<String, Object> attributes = null;
         try {
             errorCode = ErrorCode.valueOf(enumKey);
+            attributes = getConstraintViolationAttributes(exception);
         } catch (IllegalArgumentException e) {
             log.error(errorCode.getMessage());
         }
 
+        String message = !Objects.isNull(attributes) ? mapAttribute(errorCode.getMessage(), attributes) : errorCode.getMessage();
+
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(errorCode.getStatusCode().value())
-                .message(errorCode.getMessage())
+                .message(message)
                 .build();
 
         return ResponseEntity
                 .status(errorCode.getStatusCode())
                 .body(apiResponse);
+    }
+
+    private Map<String, Object> getConstraintViolationAttributes(MethodArgumentNotValidException exception) {
+        var constraintViolation = exception.getBindingResult()
+                .getAllErrors().stream()
+                .findFirst()
+                .map(error -> error.unwrap(ConstraintViolation.class))
+                .orElseThrow(() -> new IllegalArgumentException("No ConstraintViolation found"));
+
+        return constraintViolation.getConstraintDescriptor().getAttributes();
+    }
+
+    private String mapAttribute(String message, Map<String, Object> attributes) {
+        if (attributes == null) return message;
+
+        String minValue = Objects.toString(attributes.get(MIN_ATTRIBUTE), "N/A");
+        String maxValue = Objects.toString(attributes.get(MAX_ATTRIBUTE), "N/A");
+
+        message = message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+        message = message.replace("{" + MAX_ATTRIBUTE + "}", maxValue);
+
+        return message;
     }
 }

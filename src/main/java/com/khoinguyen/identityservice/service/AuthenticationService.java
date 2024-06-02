@@ -64,7 +64,7 @@ public class AuthenticationService {
                 .issuer("nguyentienkhoi.it")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(24, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .claim("scope", buildScope(user))
                 .build();

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class UserService {
         }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        user.setRoles(Set.of(USER.name()));
+        user.setRoles(Set.of(roleRepository.findById("USER").orElseThrow()));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
