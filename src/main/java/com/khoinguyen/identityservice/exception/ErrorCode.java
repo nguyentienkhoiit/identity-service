@@ -5,21 +5,24 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public enum ErrorCode {
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"),
-    INVALID_KEY(1001, "Invalid message key"),
-    USERNAME_INVALID(1002, "Username must be at least 3 characters"),
-    USER_EXISTED(1003, "User existed"),
-    PASSWORD_INVALID(1004, "Password must be at least 4 characters"),
-    USER_NOT_EXIST(1005, "User not exist"),
-    UNAUTHENTICATED(1006, "Unauthenticated"),
-    TOKEN_VERIFICATION_FAILED(1007, "Token verification failed");;
+    UNCATEGORIZED_EXCEPTION("Uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_KEY("Invalid message key", HttpStatus.BAD_REQUEST),
+    USERNAME_INVALID("Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
+    USER_EXISTED("User existed", HttpStatus.BAD_REQUEST),
+    PASSWORD_INVALID("Password must be at least 4 characters", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXIST("User not exist", HttpStatus.NOT_FOUND),
+    UNAUTHENTICATED("Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED("You do not permission", HttpStatus.FORBIDDEN),
+    TOKEN_VERIFICATION_FAILED("Token verification failed", HttpStatus.INTERNAL_SERVER_ERROR);
 
-    int code;
     String message;
+    HttpStatusCode statusCode;
 }

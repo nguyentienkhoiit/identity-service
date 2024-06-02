@@ -7,6 +7,7 @@ import com.khoinguyen.identityservice.entity.User;
 import com.khoinguyen.identityservice.exception.AppException;
 import com.khoinguyen.identityservice.exception.ErrorCode;
 import com.khoinguyen.identityservice.mapper.UserMapper;
+import com.khoinguyen.identityservice.repository.RoleRepository;
 import com.khoinguyen.identityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import static com.khoinguyen.identityservice.enums.Role.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +27,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     @Transactional
     public UserResponse createUser(UserCreationRequest request) {
@@ -36,7 +36,7 @@ public class UserService {
         }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles(Set.of(USER.name()));
+//        user.setRoles(Set.of(USER.name()));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -55,6 +55,12 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+        userRepository.save(user);
+
         return userMapper.toUserResponse(user);
     }
 

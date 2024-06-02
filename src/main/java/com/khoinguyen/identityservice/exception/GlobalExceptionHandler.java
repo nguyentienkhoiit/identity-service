@@ -3,6 +3,7 @@ package com.khoinguyen.identityservice.exception;
 import com.khoinguyen.identityservice.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,19 +19,34 @@ public class GlobalExceptionHandler {
         ApiResponse<?> apiResponse = new ApiResponse<>();
 
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode().value());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<?>> handleAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse<?> apiResponse = new ApiResponse<>();
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(errorCode.getStatusCode().value())
+                .message(errorCode.getMessage())
+                .build();
 
-        apiResponse.setMessage(errorCode.getMessage());
-        apiResponse.setCode(errorCode.getCode());
+        return ResponseEntity.
+                status(errorCode.getStatusCode())
+                .body(apiResponse);
+    }
 
-        return ResponseEntity.badRequest().body(apiResponse);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException exception) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(errorCode.getStatusCode().value())
+                .message(errorCode.getMessage())
+                .build();
+
+        return ResponseEntity.
+                status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -43,10 +59,13 @@ public class GlobalExceptionHandler {
             log.error(errorCode.getMessage());
         }
 
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-        apiResponse.setMessage(errorCode.getMessage());
-        apiResponse.setCode(errorCode.getCode());
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(errorCode.getStatusCode().value())
+                .message(errorCode.getMessage())
+                .build();
 
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 }

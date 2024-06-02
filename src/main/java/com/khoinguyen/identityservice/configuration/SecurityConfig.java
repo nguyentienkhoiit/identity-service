@@ -45,6 +45,7 @@ public class SecurityConfig {
                                         jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                                 )
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 );
         return httpSecurity.build();
     }
@@ -52,7 +53,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);

@@ -1,6 +1,7 @@
 package com.khoinguyen.identityservice.configuration;
 
 import com.khoinguyen.identityservice.entity.User;
+import com.khoinguyen.identityservice.repository.RoleRepository;
 import com.khoinguyen.identityservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -11,14 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static com.khoinguyen.identityservice.enums.Role.ADMIN;
-
 @Slf4j
 @Configuration
 public class ApplicationInitConfig {
 
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
                 User user = User.builder()
@@ -27,7 +26,7 @@ public class ApplicationInitConfig {
                         .dob(LocalDate.of(2000, 1, 1))
                         .firstname("Admin")
                         .lastname("Admin")
-                        .roles(Set.of(ADMIN.name()))
+                        .roles(Set.of(roleRepository.findById("ADMIN").orElseThrow()))
                         .build();
 
                 userRepository.save(user);

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +22,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-@PreAuthorize("hasRole('ADMIN')")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
     UserService userService;
 
+    @PreAuthorize("hasAuthority('CREATE_USER')")
     @PostMapping
     public ApiResponse<UserResponse> createUser(
             @RequestBody @Valid UserCreationRequest user
@@ -33,23 +34,22 @@ public class UserController {
         return new ApiResponse<>(userService.createUser(user));
     }
 
+    @PreAuthorize("hasAuthority('GET_ALL_USER')")
     @GetMapping
     public ApiResponse<List<User>> getUsers() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        log.info("Username: {}", authentication.getName());
-
-        authentication.getAuthorities().forEach(g -> log.info("GrantedAuthority: {}", g.getAuthority()));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
         return new ApiResponse<>(userService.getUsers());
     }
 
+    @PreAuthorize("hasAuthority('GET_USER_BY_ID')")
     @GetMapping("/{userId}")
     public ApiResponse<UserResponse> getUser(@PathVariable String userId) {
-        log.info("In method get user by id");
         return new ApiResponse<>(userService.getUser(userId));
     }
 
+    @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PutMapping("/{userId}")
     public ApiResponse<UserResponse> updateUser(
             @PathVariable String userId,
@@ -58,11 +58,13 @@ public class UserController {
         return new ApiResponse<>(userService.updateUser(userId, request));
     }
 
+    @PreAuthorize("hasAuthority('DELETE_USER')")
     @DeleteMapping("/{userId}")
     public ApiResponse<UserResponse> deleteUser(@PathVariable String userId) {
         return new ApiResponse<>(userService.deleteUser(userId));
     }
 
+    @PreAuthorize("hasAuthority('GET_MY_INFO')")
     @GetMapping("/my-info")
     public ApiResponse<UserResponse> getMyInfo() {
         return new ApiResponse<>(userService.getMyInfo());
