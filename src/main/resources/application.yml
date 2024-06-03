@@ -4,6 +4,8 @@ server:
     context-path: /identity
 jwt:
   signerKey: UlCFXMjIMtTYduhI2UP7xrnln3dRSHzXutc50cHjiwM+oTsVad/Ow5Po51yDcbBS
+  valid-duration: 3600 #in second
+  refreshable-duration: 86400 # in second
 spring:
   application:
     name: identity-service

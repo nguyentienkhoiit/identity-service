@@ -2,6 +2,8 @@ package com.khoinguyen.identityservice.controller;
 
 import com.khoinguyen.identityservice.dto.request.AuthenticationRequest;
 import com.khoinguyen.identityservice.dto.request.IntrospectRequest;
+import com.khoinguyen.identityservice.dto.request.LogoutRequest;
+import com.khoinguyen.identityservice.dto.request.RefreshRequest;
 import com.khoinguyen.identityservice.dto.response.ApiResponse;
 import com.khoinguyen.identityservice.dto.response.AuthenticationResponse;
 import com.khoinguyen.identityservice.dto.response.IntrospectResponse;
@@ -36,5 +38,21 @@ public class AuthController {
             @RequestBody AuthenticationRequest request
     ) {
         return new ApiResponse<>(authenticationService.authenticate(request));
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> authenticate(
+            @RequestBody RefreshRequest request
+    ) throws ParseException, JOSEException {
+        return new ApiResponse<>(authenticationService.refreshToken(request));
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(
+            @RequestBody LogoutRequest request
+    ) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+                .build();
     }
 }
