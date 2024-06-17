@@ -1,22 +1,25 @@
 package com.khoinguyen.identityservice.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import com.khoinguyen.identityservice.dto.request.UserCreationRequest;
 import com.khoinguyen.identityservice.dto.request.UserUpdateRequest;
 import com.khoinguyen.identityservice.dto.response.ApiResponse;
 import com.khoinguyen.identityservice.dto.response.UserResponse;
 import com.khoinguyen.identityservice.entity.User;
 import com.khoinguyen.identityservice.service.UserService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -28,9 +31,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('CREATE_USER')")
     @PostMapping
-    public ApiResponse<UserResponse> createUser(
-            @RequestBody @Valid UserCreationRequest user
-    ) {
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest user) {
         return new ApiResponse<>(userService.createUser(user));
     }
 
@@ -51,10 +52,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PutMapping("/{userId}")
-    public ApiResponse<UserResponse> updateUser(
-            @PathVariable String userId,
-            @RequestBody UserUpdateRequest request
-    ) {
+    public ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return new ApiResponse<>(userService.updateUser(userId, request));
     }
 

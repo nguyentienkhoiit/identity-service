@@ -1,11 +1,13 @@
 package com.khoinguyen.identityservice.dto.request;
 
-import com.khoinguyen.identityservice.valiator.DobConstraint;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Size;
+
+import com.khoinguyen.identityservice.valiator.DobConstraint;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,8 +18,10 @@ import java.time.LocalDate;
 public class UserCreationRequest {
     @Size(min = 3, max = 32, message = "USERNAME_INVALID")
     String username;
+
     @Size(min = 4, max = 32, message = "PASSWORD_INVALID")
     String password;
+
     String firstname;
     String lastname;
 

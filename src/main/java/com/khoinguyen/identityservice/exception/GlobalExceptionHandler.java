@@ -1,16 +1,19 @@
 package com.khoinguyen.identityservice.exception;
 
-import com.khoinguyen.identityservice.dto.response.ApiResponse;
+import java.util.Map;
+import java.util.Objects;
+
 import jakarta.validation.ConstraintViolation;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
-import java.util.Objects;
+import com.khoinguyen.identityservice.dto.response.ApiResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
@@ -36,9 +39,7 @@ public class GlobalExceptionHandler {
                 .message(errorCode.getMessage())
                 .build();
 
-        return ResponseEntity.
-                status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -49,13 +50,12 @@ public class GlobalExceptionHandler {
                 .message(errorCode.getMessage())
                 .build();
 
-        return ResponseEntity.
-                status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException exception) {
         String enumKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
 
@@ -67,21 +67,19 @@ public class GlobalExceptionHandler {
             log.error(errorCode.getMessage());
         }
 
-        String message = !Objects.isNull(attributes) ? mapAttribute(errorCode.getMessage(), attributes) : errorCode.getMessage();
+        String message =
+                !Objects.isNull(attributes) ? mapAttribute(errorCode.getMessage(), attributes) : errorCode.getMessage();
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(errorCode.getStatusCode().value())
                 .message(message)
                 .build();
 
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     private Map<String, Object> getConstraintViolationAttributes(MethodArgumentNotValidException exception) {
-        var constraintViolation = exception.getBindingResult()
-                .getAllErrors().stream()
+        var constraintViolation = exception.getBindingResult().getAllErrors().stream()
                 .findFirst()
                 .map(error -> error.unwrap(ConstraintViolation.class))
                 .orElseThrow(() -> new IllegalArgumentException("No ConstraintViolation found"));

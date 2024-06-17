@@ -1,12 +1,13 @@
 package com.khoinguyen.identityservice.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 import com.khoinguyen.identityservice.dto.request.UserCreationRequest;
 import com.khoinguyen.identityservice.dto.request.UserUpdateRequest;
 import com.khoinguyen.identityservice.dto.response.UserResponse;
 import com.khoinguyen.identityservice.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

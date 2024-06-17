@@ -1,16 +1,18 @@
 package com.khoinguyen.identityservice.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.khoinguyen.identityservice.dto.request.PermissionRequest;
 import com.khoinguyen.identityservice.dto.response.PermissionResponse;
 import com.khoinguyen.identityservice.entity.Permission;
 import com.khoinguyen.identityservice.mapper.PermissionMapper;
 import com.khoinguyen.identityservice.repository.PermissionRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +29,7 @@ public class PermissionService {
 
     public List<PermissionResponse> getAll() {
         var permissions = permissionRepository.findAll();
-        return permissions.stream()
-                .map(permissionMapper::toPermissionResponse)
-                .toList();
+        return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
     }
 
     public void delete(String permissionName) {

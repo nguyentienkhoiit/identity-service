@@ -1,5 +1,7 @@
 package com.khoinguyen.identityservice.configuration;
 
+import static org.springframework.http.HttpMethod.POST;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +15,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.http.HttpMethod.POST;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {
-            "/auth/**"
-    };
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/**"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
@@ -30,18 +28,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request ->
-                        request.requestMatchers(POST, PUBLIC_ENDPOINTS).permitAll()
-                                .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2
-                                .jwt(
-                                        jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
-                                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                                )
-                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                );
+                .authorizeHttpRequests(request -> request.requestMatchers(POST, PUBLIC_ENDPOINTS)
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(customJwtDecoder)
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
         return httpSecurity.build();
     }
 

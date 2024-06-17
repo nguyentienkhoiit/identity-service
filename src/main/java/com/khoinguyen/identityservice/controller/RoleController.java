@@ -1,16 +1,18 @@
 package com.khoinguyen.identityservice.controller;
 
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
 import com.khoinguyen.identityservice.dto.request.RoleRequest;
 import com.khoinguyen.identityservice.dto.response.ApiResponse;
 import com.khoinguyen.identityservice.dto.response.RoleResponse;
 import com.khoinguyen.identityservice.service.RoleService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,9 +23,7 @@ public class RoleController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('CREATE_ROLE')")
-    ApiResponse<RoleResponse> createRole(
-            @RequestBody RoleRequest request
-    ) {
+    ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest request) {
         return new ApiResponse<>(roleService.create(request));
     }
 

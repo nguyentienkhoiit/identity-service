@@ -1,23 +1,26 @@
 package com.khoinguyen.identityservice.configuration;
 
-import com.khoinguyen.identityservice.entity.User;
-import com.khoinguyen.identityservice.repository.RoleRepository;
-import com.khoinguyen.identityservice.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.util.Set;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
-import java.util.Set;
+import com.khoinguyen.identityservice.entity.User;
+import com.khoinguyen.identityservice.repository.RoleRepository;
+import com.khoinguyen.identityservice.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
 public class ApplicationInitConfig {
 
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    ApplicationRunner applicationRunner(
+            UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
                 User user = User.builder()

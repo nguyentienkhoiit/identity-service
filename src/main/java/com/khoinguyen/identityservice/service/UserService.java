@@ -1,5 +1,14 @@
 package com.khoinguyen.identityservice.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.khoinguyen.identityservice.dto.request.UserCreationRequest;
 import com.khoinguyen.identityservice.dto.request.UserUpdateRequest;
 import com.khoinguyen.identityservice.dto.response.UserResponse;
@@ -9,17 +18,10 @@ import com.khoinguyen.identityservice.exception.ErrorCode;
 import com.khoinguyen.identityservice.mapper.UserMapper;
 import com.khoinguyen.identityservice.repository.RoleRepository;
 import com.khoinguyen.identityservice.repository.UserRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,14 +49,14 @@ public class UserService {
     }
 
     public UserResponse getUser(String userId) {
-        return userRepository.findById(userId)
+        return userRepository
+                .findById(userId)
                 .map(userMapper::toUserResponse)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -66,8 +68,7 @@ public class UserService {
     }
 
     public UserResponse deleteUser(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         userRepository.deleteById(user.getId());
         return userMapper.toUserResponse(user);
     }
@@ -76,8 +77,7 @@ public class UserService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         return userMapper.toUserResponse(user);
     }
 }
